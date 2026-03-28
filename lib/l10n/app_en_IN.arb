@@ -1,0 +1,90 @@
+{
+    "appTitle": "PomoFocus",
+    "settings": "Settings",
+    "timerDurations": "⏱️ Timer Durations",
+    "workMinutes": "Kaam (minutes)",
+    "shortBreakMinutes": "Chota Break (minutes)",
+    "longBreakMinutes": "Lamba Break (minutes)",
+    "sessionsBeforeLongBreak": "Lambe break se pehle sessions",
+    "preferences": "⚙️ Preferences",
+    "autoStart": "Agla session auto-start karein",
+    "autoStartSubtitle": "Timer khatam hone par agla session shuru karein",
+    "playAlarmOnce": "Alarm sirf ek baar bajayein",
+    "playAlarmOnceSubtitle": "Agar band hai, toh roke jaane tak bajega",
+    "darkMode": "Dark Mode",
+    "alarmSound": "🔔 Alarm Sound",
+    "cancel": "Cancel",
+    "saveSettings": "Settings save karein",
+    "bell": "🔔 Bell Bowl",
+    "notification": "📱 Notification",
+    "churchBell": "🎵 Church Bell",
+    "realityBell": "🔊 Reality Bell",
+    "silent": "🔇 Silent",
+    "newTask": "Naya Task",
+    "taskName": "Task ka naam",
+    "estimatedPomodoros": "Estimated pomodoros 🍅",
+    "addTask": "Task add karein",
+    "logDistraction": "Distraction log karein",
+    "whatDistractedYou": "Dhyan kisne bhatkaya?",
+    "logIt": "Log karein",
+    "focusSessionDone": "🎉 Kaam ka session poora hua! Ab break lein.",
+    "breakOver": "⚡ Break khatam! Kaam shuru karne ke liye taiyaar?",
+    "focusSessionRunning": "Kaam ka session chal raha hai...",
+    "breakTimeRunning": "Break chal raha hai...",
+    "focusSessionComplete": "Kaam ka session poora hua!",
+    "breakComplete": "Break poora hua!",
+    "readyForBreak": "Chhote break ke liye taiyaar?",
+    "readyToFocus": "Focus karne ke liye taiyaar?",
+    "timer": "Timer",
+    "tasks": "Tasks",
+    "stats": "Stats",
+    "focusTime": "Focus Time",
+    "longBreak": "Lamba Break",
+    "shortBreak": "Chota Break",
+    "language": "Language",
+    "sessionNumber": "Session #{count}",
+    "@sessionNumber": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "reset": "Reset",
+    "skip": "Skip",
+    "goToTasks": "Task select karne ke liye Tasks par jayein",
+    "stopAlarm": "Alarm Rokein",
+    "autoStartOn": "Auto-start Chalu",
+    "active": "Active",
+    "select": "Select",
+    "noTasksYet": "Koi tasks nahi",
+    "tapToAddFirstTask": "Pehla task jodne ke liye + par tap karein",
+    "today": "Aaj",
+    "sessionsCount": "Sessions",
+    "allTime": "All Time",
+    "totalFocusTime": "Kul Focus Time",
+    "totalFocusTimeLabel": "🕐 Kul Focus Time",
+    "minutesApproxHours": "{minutes} minutes ≈ {hours} hours",
+    "@minutesApproxHours": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "hours": {
+                "type": "String"
+            }
+        }
+    },
+    "sessionHistory": "Session History",
+    "noSessionsYet": "Koi sessions nahi",
+    "completeSessionToSee": "Itihas dekhne ke liye session poora karein",
+    "clearAll": "Sab saaf karein",
+    "noDistractionsLogged": "Koi distraction log nahi hua!",
+    "tapToLogOne": "Log karne ke liye ⚠️ tap karein",
+    "distractionsTitle": "Distractions ({count})",
+    "@distractionsTitle": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "totalLabel": "total",
+    "focusLabel": "Focus"
+}

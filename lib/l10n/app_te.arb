@@ -1,0 +1,90 @@
+{
+    "appTitle": "PomoFocus",
+    "settings": "సెట్టింగ్‌లు",
+    "timerDurations": "⏱️ టైమర్ వ్యవధులు",
+    "workMinutes": "పని (నిమిషాలు)",
+    "shortBreakMinutes": "చిన్న విరామం (నిమిషాలు)",
+    "longBreakMinutes": "పెద్ద విరామం (నిమిషాలు)",
+    "sessionsBeforeLongBreak": "పెద్ద విరామానికి ముందు సెషన్లు",
+    "preferences": "⚙️ ప్రాధాన్యతలు",
+    "autoStart": "తదుపరి సెషన్‌ను స్వయంచాలకంగా ప్రారంభించండి",
+    "autoStartSubtitle": "టైమర్ ముగిసినప్పుడు స్వయంచాలకంగా ప్రారంభించండి",
+    "playAlarmOnce": "అలారం ఒక్కసారి మాత్రమే మోగించండి",
+    "playAlarmOnceSubtitle": "లేకపోతే, మీరు ఆపేంత వరకు మోగుతుంది",
+    "darkMode": "డార్క్ మోడ్",
+    "alarmSound": "🔔 అలారం ధ్వని",
+    "cancel": "రద్దు చేయండి",
+    "saveSettings": "సెట్టింగ్‌లను సేవ్ చేయండి",
+    "bell": "🔔 గంట",
+    "notification": "📱 నోటిఫికేషన్",
+    "churchBell": "🎵 చర్చి గంట",
+    "realityBell": "🔊 రియాలిటీ గంట",
+    "silent": "🔇 నిశ్శబ్దం",
+    "newTask": "కొత్త విధి",
+    "taskName": "విధి పేరు",
+    "estimatedPomodoros": "అంచనా వేసిన పోమోడోరోలు 🍅",
+    "addTask": "విధిని జోడించండి",
+    "logDistraction": "పరధ్యానాన్ని లాగ్ చేయండి",
+    "whatDistractedYou": "మిమ్మల్ని ఏది పరధ్యానానికి గురి చేసింది?",
+    "logIt": "లాగ్ చేయండి",
+    "focusSessionDone": "🎉 పని సెషన్ పూర్తయింది! విరామం తీసుకోండి.",
+    "breakOver": "⚡ విరామం ముగిసింది! పనికి సిద్ధమా?",
+    "focusSessionRunning": "పని సెషన్ నడుస్తోంది...",
+    "breakTimeRunning": "విరామం సమయం నడుస్తోంది...",
+    "focusSessionComplete": "పని సెషన్ పూర్తయింది!",
+    "breakComplete": "విరామం పూర్తయింది!",
+    "readyForBreak": "చిన్న విరామానికి సిద్ధమా?",
+    "readyToFocus": "దృష్టి పెట్టడానికి సిద్ధమా?",
+    "timer": "టైమర్",
+    "tasks": "పనులు",
+    "stats": "గణాంకాలు",
+    "focusTime": "పని సమయం",
+    "longBreak": "పెద్ద విరామం",
+    "shortBreak": "చిన్న విరామం",
+    "language": "భాష",
+    "sessionNumber": "సెషన్ #{count}",
+    "@sessionNumber": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "reset": "రీసెట్ చేయండి",
+    "skip": "దాటవేయి",
+    "goToTasks": "పనిని ఎంచుకోవడానికి పనులకు (Tasks) వెళ్ళండి",
+    "stopAlarm": "అలారం ఆపండి",
+    "autoStartOn": "స్వయంచాలక ప్రారంభం ఆన్",
+    "active": "క్రియాశీలమైనది",
+    "select": "ఎంచుకోండి",
+    "noTasksYet": "ఇంకా పనులు లేవు",
+    "tapToAddFirstTask": "మీ మొదటి పనిని జోడించడానికి + నొక్కండి",
+    "today": "ఈ రోజు",
+    "sessionsCount": "సెషన్లు",
+    "allTime": "అన్ని సమయాలు",
+    "totalFocusTime": "కలిపిన పని సమయం",
+    "totalFocusTimeLabel": "🕐 కలిపిన పని సమయం",
+    "minutesApproxHours": "{minutes} నిమిషాలు ≈ {hours} గంటలు",
+    "@minutesApproxHours": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "hours": {
+                "type": "String"
+            }
+        }
+    },
+    "sessionHistory": "సెషన్ చరిత్ర",
+    "noSessionsYet": "ఇంకా సెషన్లు లేవు",
+    "completeSessionToSee": "చరిత్రను చూడటానికి సెషన్‌ను పూర్తి చేయండి",
+    "clearAll": "అన్నీ తుడిచివేయండి",
+    "noDistractionsLogged": "ఎలాంటి పరధ్యానాలు లాగ్ చేయబడలేదు!",
+    "tapToLogOne": "లాగ్ చేయడానికి సెషన్ సమయంలో ⚠️ నొక్కండి",
+    "distractionsTitle": "పరధయనల ({count})",
+    "@distractionsTitle": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "totalLabel": "మతత",
+    "focusLabel": "ఏకగరత"
+}

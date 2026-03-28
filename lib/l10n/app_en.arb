@@ -1,0 +1,90 @@
+{
+    "appTitle": "PomoFocus",
+    "settings": "Settings",
+    "timerDurations": "⏱️ Timer Durations",
+    "workMinutes": "Work (minutes)",
+    "shortBreakMinutes": "Short Break (minutes)",
+    "longBreakMinutes": "Long Break (minutes)",
+    "sessionsBeforeLongBreak": "Sessions before long break",
+    "preferences": "⚙️ Preferences",
+    "autoStart": "Auto-start next session",
+    "autoStartSubtitle": "Automatically begin next session when timer ends",
+    "playAlarmOnce": "Play alarm only once",
+    "playAlarmOnceSubtitle": "If off, alarm loops until you stop it",
+    "darkMode": "Dark Mode",
+    "alarmSound": "🔔 Alarm Sound",
+    "cancel": "Cancel",
+    "saveSettings": "Save Settings",
+    "bell": "🔔 Bell Bowl",
+    "notification": "📱 Notification",
+    "churchBell": "🎵 Church Bell",
+    "realityBell": "🔊 Reality Bell",
+    "silent": "🔇 Silent",
+    "newTask": "New Task",
+    "taskName": "Task name",
+    "estimatedPomodoros": "Estimated pomodoros 🍅",
+    "addTask": "Add Task",
+    "logDistraction": "Log Distraction",
+    "whatDistractedYou": "What distracted you?",
+    "logIt": "Log It",
+    "focusSessionDone": "🎉 Focus session done! Time for a break.",
+    "breakOver": "⚡ Break over! Ready to focus?",
+    "focusSessionRunning": "Focus session is running...",
+    "breakTimeRunning": "Break time is running...",
+    "focusSessionComplete": "Focus Session Complete!",
+    "breakComplete": "Break Complete!",
+    "readyForBreak": "Ready for a short break?",
+    "readyToFocus": "Ready to focus?",
+    "timer": "Timer",
+    "tasks": "Tasks",
+    "stats": "Stats",
+    "focusTime": "Focus Time",
+    "longBreak": "Long Break",
+    "shortBreak": "Short Break",
+    "language": "Language",
+    "sessionNumber": "Session #{count}",
+    "@sessionNumber": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "reset": "Reset",
+    "skip": "Skip",
+    "goToTasks": "Go to Tasks to select a task",
+    "stopAlarm": "Stop Alarm",
+    "autoStartOn": "Auto-start ON",
+    "active": "Active",
+    "select": "Select",
+    "noTasksYet": "No tasks yet",
+    "tapToAddFirstTask": "Tap + to add your first task",
+    "today": "Today",
+    "sessionsCount": "Sessions",
+    "allTime": "All Time",
+    "totalFocusTime": "Total Focus Time",
+    "totalFocusTimeLabel": "🕐 Total Focus Time",
+    "minutesApproxHours": "{minutes} minutes ≈ {hours} hours",
+    "@minutesApproxHours": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "hours": {
+                "type": "String"
+            }
+        }
+    },
+    "sessionHistory": "Session History",
+    "noSessionsYet": "No sessions yet",
+    "completeSessionToSee": "Complete a session to see history here",
+    "clearAll": "Clear all",
+    "noDistractionsLogged": "No distractions logged!",
+    "tapToLogOne": "Tap ⚠️ during a focus session to log one",
+    "distractionsTitle": "Distractions ({count})",
+    "@distractionsTitle": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "totalLabel": "total",
+    "focusLabel": "Focus"
+}

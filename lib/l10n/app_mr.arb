@@ -1,0 +1,90 @@
+{
+    "appTitle": "PomoFocus",
+    "settings": "सेटिंग्ज",
+    "timerDurations": "⏱️ टायमरची वेळ",
+    "workMinutes": "काम (मिनिटे)",
+    "shortBreakMinutes": "लहान ब्रेक (मिनिटे)",
+    "longBreakMinutes": "मोठा ब्रेक (मिनिटे)",
+    "sessionsBeforeLongBreak": "मोठ्या ब्रेकपूर्वीची सत्रे",
+    "preferences": "⚙️ प्राधान्ये",
+    "autoStart": "पुढील सत्र स्वयंचलितपणे सुरू करा",
+    "autoStartSubtitle": "टायमर संपल्यावर स्वयंचलितपणे सुरू करा",
+    "playAlarmOnce": "अलार्म फक्त एकदा वाजवा",
+    "playAlarmOnceSubtitle": "बंद असल्यास थांबवेपर्यंत अलार्म वाजेल",
+    "darkMode": "डार्क मोड",
+    "alarmSound": "🔔 अलार्मचा आवाज",
+    "cancel": "रद्द करा",
+    "saveSettings": "सेटिंग्ज जतन करा",
+    "bell": "🔔 घंटी",
+    "notification": "📱 सूचना",
+    "churchBell": "🎵 चर्चची घंटी",
+    "realityBell": "🔊 रियलिटी घंटी",
+    "silent": "🔇 शांत",
+    "newTask": "नवीन कार्य",
+    "taskName": "कार्याचे नाव",
+    "estimatedPomodoros": "अंदाजे पोमोडोरो 🍅",
+    "addTask": "कार्य जोडा",
+    "logDistraction": "लक्ष विचलित नोंदवा",
+    "whatDistractedYou": "तुमचे लक्ष कशाने विचलित केले?",
+    "logIt": "नोंदवा",
+    "focusSessionDone": "🎉 कामाचे सत्र पूर्ण! आता ब्रेक घ्या.",
+    "breakOver": "⚡ ब्रेक संपला! कामासाठी तयार?",
+    "focusSessionRunning": "कामाचे सत्र चालू आहे...",
+    "breakTimeRunning": "ब्रेकची वेळ चालू आहे...",
+    "focusSessionComplete": "कामाचे सत्र पूर्ण झाले!",
+    "breakComplete": "ब्रेक पूर्ण झाला!",
+    "readyForBreak": "लहान ब्रेकसाठी तयार आहात?",
+    "readyToFocus": "कामावर लक्ष केंद्रित करण्यासाठी तयार?",
+    "timer": "टायमर",
+    "tasks": "कार्ये",
+    "stats": "आकडेवारी",
+    "focusTime": "कामाची वेळ",
+    "longBreak": "मोठा ब्रेक",
+    "shortBreak": "लहान ब्रेक",
+    "language": "भाषा",
+    "sessionNumber": "सत्र #{count}",
+    "@sessionNumber": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "reset": "रीसेट करा",
+    "skip": "सोडा",
+    "goToTasks": "कार्य निवडण्यासाठी कार्यांवर (Tasks) जा",
+    "stopAlarm": "अलार्म थांबवा",
+    "autoStartOn": "स्वयंचलित प्रारंभ चालू",
+    "active": "सक्रिय",
+    "select": "निवडा",
+    "noTasksYet": "अद्याप कोणतीही कार्ये नाहीत",
+    "tapToAddFirstTask": "तुमचे पहिले कार्य जोडण्यासाठी + वर टॅप करा",
+    "today": "आज",
+    "sessionsCount": "सत्रे",
+    "allTime": "सर्वकाळ",
+    "totalFocusTime": "एकूण लक्ष केंद्रित वेळ",
+    "totalFocusTimeLabel": "🕐 एकूण लक्ष केंद्रित वेळ",
+    "minutesApproxHours": "{minutes} मिनिटे ≈ {hours} तास",
+    "@minutesApproxHours": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "hours": {
+                "type": "String"
+            }
+        }
+    },
+    "sessionHistory": "सत्र इतिहास",
+    "noSessionsYet": "अद्याप कोणतेही सत्र नाही",
+    "completeSessionToSee": "इथे इतिहास पाहण्यासाठी एक सत्र पूर्ण करा",
+    "clearAll": "सर्व साफ करा",
+    "noDistractionsLogged": "लक्ष विचलित नोंदवले नाही!",
+    "tapToLogOne": "नोंदवण्यासाठी लक्ष केंद्रित सत्रादरम्यान ⚠️ टॅप करा",
+    "distractionsTitle": "वयतयय ({count})",
+    "@distractionsTitle": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "totalLabel": "एकण",
+    "focusLabel": "एकगरत"
+}

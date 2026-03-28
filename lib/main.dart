@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pomodoratimerapp/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,14 +17,23 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Lock to portrait mode to prevent rotation-based Impeller/Vulkan crashes on certain devices
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
   tz.initializeTimeZones();
   
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  const InitializationSettings initializationSettings =
-      InitializationSettings(android: initializationSettingsAndroid);
-      
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  if (!kIsWeb) {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+        
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
 
   runApp(const PomodoroApp());
 }
@@ -75,16 +87,41 @@ class PomodoroApp extends StatefulWidget {
 }
 
 class _PomodoroAppState extends State<PomodoroApp> {
-  bool isDarkMode = true;
+  bool isDarkMode = false;
+  String localeCode = 'en';
 
-  void toggleTheme(bool value) => setState(() => isDarkMode = value);
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialLocale();
+  }
+
+  Future<void> _loadInitialLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      localeCode = prefs.getString('localeCode') ?? 'en';
+      isDarkMode = prefs.getBool('isDarkMode') ?? false;
+    });
+  }
+
+  void toggleTheme(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDarkMode', value);
+    setState(() => isDarkMode = value);
+  }
+
+  void changeLocale(String code) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('localeCode', code);
+    setState(() => localeCode = code);
+  }
 
   ThemeData _buildTheme(Brightness brightness) {
     final isDark = brightness == Brightness.dark;
     final base = isDark ? ThemeData.dark() : ThemeData.light();
     return base.copyWith(
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFFE94560),
+        seedColor: const Color(0xFFF44336),
         brightness: brightness,
       ),
       textTheme: GoogleFonts.outfitTextTheme(base.textTheme),
@@ -99,13 +136,18 @@ class _PomodoroAppState extends State<PomodoroApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Pomodoro Timer',
+      onGenerateTitle: (context) => AppLocalizations.of(context)?.appTitle ?? 'PomoFocus',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: Locale(localeCode),
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       home: HomeScreen(
         onThemeToggle: toggleTheme,
         isDarkMode: isDarkMode,
+        currentLocale: localeCode,
+        onLocaleChange: changeLocale,
       ),
     );
   }
@@ -117,12 +159,16 @@ class _PomodoroAppState extends State<PomodoroApp> {
 
 class HomeScreen extends StatefulWidget {
   final ValueChanged<bool> onThemeToggle;
+  final ValueChanged<String> onLocaleChange;
   final bool isDarkMode;
+  final String currentLocale;
 
   const HomeScreen({
     super.key,
     required this.onThemeToggle,
     required this.isDarkMode,
+    required this.onLocaleChange,
+    required this.currentLocale,
   });
 
   @override
@@ -197,6 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (kIsWeb) return;
     if (state == AppLifecycleState.paused) {
       if (isRunning && _endTime != null) {
         _scheduleNotification();
@@ -432,6 +479,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     bool tempAutoStart = autoStart;
     bool tempPlayAlarmOnce = playAlarmOnce;
     bool tempDark = widget.isDarkMode;
+    String tempLocale = widget.currentLocale;
 
     showDialog(
       context: context,
@@ -441,7 +489,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
             children: [
               const Icon(Icons.settings_outlined),
               const SizedBox(width: 8),
-              Text('Settings', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              Text(AppLocalizations.of(ctx)?.settings ?? 'Settings', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
             ],
           ),
           scrollable: true,
@@ -451,39 +499,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _sectionLabel('⏱️ Timer Durations'),
+                _sectionLabel(AppLocalizations.of(ctx)?.timerDurations ?? '⏱️ Timer Durations'),
                 const SizedBox(height: 8),
-                _settingField(workCtrl, 'Work (minutes)'),
-                _settingField(shortCtrl, 'Short Break (minutes)'),
-                _settingField(longCtrl, 'Long Break (minutes)'),
-                _settingField(sessCtrl, 'Sessions before long break'),
+                _settingField(workCtrl, AppLocalizations.of(ctx)?.workMinutes ?? 'Work (minutes)'),
+                _settingField(shortCtrl, AppLocalizations.of(ctx)?.shortBreakMinutes ?? 'Short Break (minutes)'),
+                _settingField(longCtrl, AppLocalizations.of(ctx)?.longBreakMinutes ?? 'Long Break (minutes)'),
+                _settingField(sessCtrl, AppLocalizations.of(ctx)?.sessionsBeforeLongBreak ?? 'Sessions before long break'),
                 const Divider(height: 28),
-                _sectionLabel('⚙️ Preferences'),
+                _sectionLabel(AppLocalizations.of(ctx)?.preferences ?? '⚙️ Preferences'),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Auto-start next session'),
-                  subtitle: const Text('Automatically begin next session when timer ends'),
+                  title: Text(AppLocalizations.of(ctx)?.autoStart ?? 'Auto-start next session'),
+                  subtitle: Text(AppLocalizations.of(ctx)?.autoStartSubtitle ?? 'Automatically begin next session when timer ends'),
                   value: tempAutoStart,
                   activeColor: _sessionColor,
                   onChanged: (v) => setLocal(() => tempAutoStart = v),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Play alarm only once'),
-                  subtitle: const Text('If off, alarm loops until you stop it'),
+                  title: Text(AppLocalizations.of(ctx)?.playAlarmOnce ?? 'Play alarm only once'),
+                  subtitle: Text(AppLocalizations.of(ctx)?.playAlarmOnceSubtitle ?? 'If off, alarm loops until you stop it'),
                   value: tempPlayAlarmOnce,
                   activeColor: _sessionColor,
                   onChanged: (v) => setLocal(() => tempPlayAlarmOnce = v),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Dark Mode'),
+                  title: Text(AppLocalizations.of(ctx)?.darkMode ?? 'Dark Mode'),
                   value: tempDark,
                   activeColor: _sessionColor,
                   onChanged: (v) => setLocal(() => tempDark = v),
                 ),
                 const Divider(height: 28),
-                _sectionLabel('🔔 Alarm Sound'),
+                _sectionLabel(AppLocalizations.of(ctx)?.alarmSound ?? '🔔 Alarm Sound'),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
                   value: ['bell', 'digital', 'chime', 'reality', 'none'].contains(tempSound) ? tempSound : 'bell',
@@ -496,15 +544,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                       vertical: 10,
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'bell', child: Text('🔔 Bell Bowl')),
+                  items: [
+                    DropdownMenuItem(value: 'bell', child: Text(AppLocalizations.of(ctx)?.bell ?? '🔔 Bell Bowl')),
                     DropdownMenuItem(
-                        value: 'digital', child: Text('📱 Notification')),
-                    DropdownMenuItem(value: 'chime', child: Text('🎵 Church Bell')),
-                    DropdownMenuItem(value: 'reality', child: Text('🔊 Reality Bell')),
-                    DropdownMenuItem(value: 'none', child: Text('🔇 Silent')),
+                        value: 'digital', child: Text(AppLocalizations.of(ctx)?.notification ?? '📱 Notification')),
+                    DropdownMenuItem(value: 'chime', child: Text(AppLocalizations.of(ctx)?.churchBell ?? '🎵 Church Bell')),
+                    DropdownMenuItem(value: 'reality', child: Text(AppLocalizations.of(ctx)?.realityBell ?? '🔊 Reality Bell')),
+                    DropdownMenuItem(value: 'none', child: Text(AppLocalizations.of(ctx)?.silent ?? '🔇 Silent')),
                   ],
                   onChanged: (v) => setLocal(() => tempSound = v!),
+                ),
+                const Divider(height: 28),
+                _sectionLabel(AppLocalizations.of(ctx)?.language ?? '🌍 Language'),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: tempLocale,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'en', child: Text('English')),
+                    DropdownMenuItem(value: 'hi', child: Text('हिन्दी (Hindi)')),
+                    DropdownMenuItem(value: 'mr', child: Text('मराठी (Marathi)')),
+                    DropdownMenuItem(value: 'ta', child: Text('தமிழ் (Tamil)')),
+                    DropdownMenuItem(value: 'te', child: Text('తెలుగు (Telugu)')),
+                    DropdownMenuItem(value: 'en_IN', child: Text('Hinglish')),
+                  ],
+                  onChanged: (v) => setLocal(() => tempLocale = v!),
                 ),
               ],
             ),
@@ -513,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(ctx)?.cancel ?? 'Cancel'),
             ),
             FilledButton(
               onPressed: () {
@@ -533,10 +605,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                   _timer?.cancel();
                 });
                 widget.onThemeToggle(tempDark);
+                if (tempLocale != widget.currentLocale) {
+                  widget.onLocaleChange(tempLocale);
+                }
                 _savePrefs();
                 Navigator.pop(ctx);
               },
-              child: const Text('Save Settings'),
+              child: Text(AppLocalizations.of(ctx)?.saveSettings ?? 'Save Settings'),
             ),
           ],
         ),
@@ -569,7 +644,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('New Task', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)?.newTask ?? 'New Task', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -577,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               controller: titleCtrl,
               autofocus: true,
               decoration: InputDecoration(
-                labelText: 'Task name',
+                labelText: AppLocalizations.of(context)?.taskName ?? 'Task name',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
@@ -587,7 +662,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               controller: estCtrl,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Estimated pomodoros 🍅',
+                labelText: AppLocalizations.of(context)?.estimatedPomodoros ?? 'Estimated pomodoros 🍅',
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 isDense: true,
@@ -598,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel')),
           FilledButton(
             onPressed: () {
               if (titleCtrl.text.trim().isEmpty) return;
@@ -610,7 +685,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               });
               Navigator.pop(context);
             },
-            child: const Text('Add Task'),
+            child: Text(AppLocalizations.of(context)?.addTask ?? 'Add Task'),
           ),
         ],
       ),
@@ -628,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           children: [
             const Icon(Icons.warning_amber_rounded, color: Colors.amber),
             const SizedBox(width: 8),
-            Text('Log Distraction',
+            Text(AppLocalizations.of(context)?.logDistraction ?? 'Log Distraction',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
           ],
         ),
@@ -636,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           controller: ctrl,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: 'What distracted you?',
+            hintText: AppLocalizations.of(context)?.whatDistractedYou ?? 'What distracted you?',
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
@@ -644,7 +719,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
+              child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel')),
           FilledButton(
             onPressed: () {
               if (ctrl.text.trim().isNotEmpty) {
@@ -657,7 +732,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               }
               Navigator.pop(context);
             },
-            child: const Text('Log It'),
+            child: Text(AppLocalizations.of(context)?.logIt ?? 'Log It'),
           ),
         ],
       ),
@@ -673,17 +748,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   }
 
   Color get _sessionColor {
-    if (isWorkSession) return const Color(0xFFE94560);
+    if (isWorkSession) return const Color(0xFFF44336); // Red for Work
     if (sessionCount % sessionsBeforeLongBreak == 0) {
-      return const Color(0xFF6C63FF);
+      return const Color(0xFF2196F3); // Blue for Long Break
     }
-    return const Color(0xFF00BFA5);
+    return const Color(0xFF4CAF50); // Green for Short Break
   }
 
-  String get _sessionLabel {
-    if (isWorkSession) return 'Focus Time';
-    if (sessionCount % sessionsBeforeLongBreak == 0) return 'Long Break';
-    return 'Short Break';
+  String _getSessionLabel(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (isWorkSession) return l10n?.focusTime ?? 'Focus Time';
+    if (sessionCount % sessionsBeforeLongBreak == 0) return l10n?.longBreak ?? 'Long Break';
+    return l10n?.shortBreak ?? 'Short Break';
   }
 
   double get _sessionTotal {
@@ -736,21 +812,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentTab,
         onDestinationSelected: (i) => setState(() => _currentTab = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.timer_outlined),
-            selectedIcon: Icon(Icons.timer),
-            label: 'Timer',
+            icon: const Icon(Icons.timer_outlined),
+            selectedIcon: const Icon(Icons.timer),
+            label: AppLocalizations.of(context)?.timer ?? 'Timer',
           ),
           NavigationDestination(
-            icon: Icon(Icons.checklist_outlined),
-            selectedIcon: Icon(Icons.checklist),
-            label: 'Tasks',
+            icon: const Icon(Icons.checklist_outlined),
+            selectedIcon: const Icon(Icons.checklist),
+            label: AppLocalizations.of(context)?.tasks ?? 'Tasks',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'Stats',
+            icon: const Icon(Icons.bar_chart_outlined),
+            selectedIcon: const Icon(Icons.bar_chart),
+            label: AppLocalizations.of(context)?.stats ?? 'Stats',
           ),
         ],
       ),
@@ -778,9 +854,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
         ),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            // ── App Bar ──
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      // ── App Bar ──
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
@@ -788,12 +872,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 8),
-                    child: Text(
-                      'Pomodoro',
-                      style: GoogleFonts.outfit(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset('assets/images/appstore.png', width: 32, height: 32),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'PomoFocus',
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Row(
@@ -830,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                 border: Border.all(color: _sessionColor.withOpacity(0.3)),
               ),
               child: Text(
-                _sessionLabel,
+                _getSessionLabel(context),
                 style: GoogleFonts.outfit(
                   color: _sessionColor,
                   fontWeight: FontWeight.w600,
@@ -867,7 +961,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                   child: CircularProgressIndicator(
                     value: progress,
                     strokeWidth: 10,
-                    backgroundColor: isDark ? Colors.white10 : Colors.black12,
+                    backgroundColor: isDark ? Colors.white10 : const Color(0xFFE2E8F0),
                     valueColor: AlwaysStoppedAnimation(_sessionColor),
                     strokeCap: StrokeCap.round,
                   ),
@@ -885,7 +979,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                       ),
                     ),
                     Text(
-                      autoStart ? 'Auto-start ON' : 'Session #${sessionCount + 1}',
+                      autoStart ? (AppLocalizations.of(context)?.autoStartOn ?? 'Auto-start ON') : AppLocalizations.of(context)?.sessionNumber(sessionCount + 1) ?? 'Session #${sessionCount + 1}',
                       style: GoogleFonts.outfit(
                         fontSize: 12,
                         color: theme.colorScheme.outline,
@@ -917,7 +1011,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                     children: [
                       const Icon(Icons.notifications_off, color: Colors.white, size: 28),
                       const SizedBox(width: 12),
-                      Text('Stop Alarm', style: GoogleFonts.outfit(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(AppLocalizations.of(context)?.stopAlarm ?? 'Stop Alarm', style: GoogleFonts.outfit(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -927,12 +1021,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _iconControlButton(
-                      Icons.refresh, 'Reset', resetTimer, theme),
+                      Icons.refresh, AppLocalizations.of(context)?.reset ?? 'Reset', resetTimer, theme),
                   const SizedBox(width: 20),
                   _primaryPlayButton(),
                   const SizedBox(width: 20),
                   _iconControlButton(
-                      Icons.skip_next, 'Skip', () {
+                      Icons.skip_next, AppLocalizations.of(context)?.skip ?? 'Skip', () {
                         if (isAlarmRinging) stopAlarm();
                         _onSessionComplete();
                       }, theme),
@@ -1005,12 +1099,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  'Go to Tasks to select a task',
+                  AppLocalizations.of(context)?.goToTasks ?? 'Go to Tasks to select a task',
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.outline),
                 ),
               ),
-          ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -1077,7 +1176,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     return Scaffold(
       key: const ValueKey('tasks'),
       appBar: AppBar(
-        title: Text('Tasks',
+        leading: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.asset('assets/images/appstore.png'),
+          ),
+        ),
+        title: Text(AppLocalizations.of(context)?.tasks ?? 'Tasks',
             style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
@@ -1094,7 +1200,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addTask,
         icon: const Icon(Icons.add),
-        label: Text('Add Task', style: GoogleFonts.outfit()),
+        label: Text(AppLocalizations.of(context)?.addTask ?? 'Add Task', style: GoogleFonts.outfit()),
         backgroundColor: _sessionColor,
         foregroundColor: Colors.white,
       ),
@@ -1102,8 +1208,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           ? _emptyState(
               theme,
               Icons.checklist_rounded,
-              'No tasks yet',
-              'Tap + to add your first task',
+              AppLocalizations.of(context)?.noTasksYet ?? 'No tasks yet',
+              AppLocalizations.of(context)?.tapToAddFirstTask ?? 'Tap + to add your first task',
             )
           : ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
@@ -1215,7 +1321,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isSelected ? 'Active' : 'Select',
+                isSelected ? (AppLocalizations.of(context)?.active ?? 'Active') : (AppLocalizations.of(context)?.select ?? 'Select'),
                 style: GoogleFonts.outfit(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -1246,7 +1352,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     return Scaffold(
       key: const ValueKey('stats'),
       appBar: AppBar(
-        title: Text('Statistics',
+        leading: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: Image.asset('assets/images/appstore.png'),
+          ),
+        ),
+        title: Text(AppLocalizations.of(context)?.stats ?? 'Statistics',
             style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -1254,23 +1367,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
         padding: const EdgeInsets.all(16),
         children: [
           // ── Today Summary Cards ──
-          Text('Today',
+          Text(AppLocalizations.of(context)?.today ?? 'Today',
               style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                  child: _statCard('🍅\nSessions', '$_todayWorkSessions',
+                  child: _statCard('🍅\n${AppLocalizations.of(context)?.sessionsCount ?? 'Sessions'}', '$_todayWorkSessions',
                       theme)),
               const SizedBox(width: 12),
               Expanded(
-                  child: _statCard('⏱️\nFocus Time',
+                  child: _statCard('⏱️\n${AppLocalizations.of(context)?.focusTime ?? 'Focus Time'}',
                       '${_todayFocusMinutes}m', theme)),
               const SizedBox(width: 12),
               Expanded(
-                  child: _statCard('📊\nAll Time',
-                      '$totalWorkSessions sessions', theme)),
+                  child: _statCard('📊\n${AppLocalizations.of(context)?.allTime ?? 'All Time'}',
+                      '$totalWorkSessions ${AppLocalizations.of(context)?.sessionsCount ?? 'sessions'}', theme)),
             ],
           ),
 
@@ -1278,8 +1391,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
 
           // Total focus time all time
           _wideStatCard(
-            '🕐 Total Focus Time',
-            '${totalFocusMinutes} minutes  ≈  ${(totalFocusMinutes / 60).toStringAsFixed(1)} hours',
+            AppLocalizations.of(context)?.totalFocusTimeLabel ?? '🕐 Total Focus Time',
+            AppLocalizations.of(context)?.minutesApproxHours(totalFocusMinutes, (totalFocusMinutes / 60).toStringAsFixed(1)) ?? '${totalFocusMinutes} minutes  ≈  ${(totalFocusMinutes / 60).toStringAsFixed(1)} hours',
             theme,
           ),
 
@@ -1288,13 +1401,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           // ── Session History ──
           Row(
             children: [
-              Text('Session History',
+              Text(AppLocalizations.of(context)?.sessionHistory ?? 'Session History',
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold, fontSize: 18)),
               const Spacer(),
               if (sessionHistory.isNotEmpty)
                 Text(
-                  '${sessionHistory.length} total',
+                  '${sessionHistory.length} ${AppLocalizations.of(context)?.totalLabel ?? 'total'}',
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.outline),
                 ),
@@ -1302,8 +1415,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           ),
           const SizedBox(height: 12),
           if (sessionHistory.isEmpty)
-            _emptyState(theme, Icons.history, 'No sessions yet',
-                'Complete a session to see history here')
+            _emptyState(theme, Icons.history, AppLocalizations.of(context)?.noSessionsYet ?? 'No sessions yet',
+                AppLocalizations.of(context)?.completeSessionToSee ?? 'Complete a session to see history here')
           else
             ...sessionHistory.reversed
                 .take(20)
@@ -1315,7 +1428,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
           Row(
             children: [
               Text(
-                  'Distractions (${distractions.length})',
+                  AppLocalizations.of(context)?.distractionsTitle(distractions.length) ?? 'Distractions (${distractions.length})',
                   style: GoogleFonts.outfit(
                       fontWeight: FontWeight.bold, fontSize: 18)),
               const Spacer(),
@@ -1331,8 +1444,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
             _emptyState(
               theme,
               Icons.check_circle_outline,
-              'No distractions logged!',
-              'Tap ⚠️ during a focus session to log one',
+              AppLocalizations.of(context)?.noDistractionsLogged ?? 'No distractions logged!',
+              AppLocalizations.of(context)?.tapToLogOne ?? 'Tap ⚠️ during a focus session to log one',
             )
           else
             ...distractions.reversed.map((d) => _distractionTile(d, theme)),
@@ -1411,10 +1524,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     final icon =
         s.type == 'work' ? '💻' : s.type == 'long_break' ? '🛌' : '☕';
     final label = s.type == 'work'
-        ? 'Focus'
+        ? (AppLocalizations.of(context)?.focusLabel ?? 'Focus')
         : s.type == 'long_break'
-            ? 'Long Break'
-            : 'Short Break';
+            ? (AppLocalizations.of(context)?.longBreak ?? 'Long Break')
+            : (AppLocalizations.of(context)?.shortBreak ?? 'Short Break');
     final timeStr =
         '${s.time.hour.toString().padLeft(2, '0')}:${s.time.minute.toString().padLeft(2, '0')}';
 

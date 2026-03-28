@@ -1,0 +1,90 @@
+{
+    "appTitle": "PomoFocus",
+    "settings": "அமைப்புகள்",
+    "timerDurations": "⏱️ டைமர் காலங்கள்",
+    "workMinutes": "வேலை (நிமிடங்கள்)",
+    "shortBreakMinutes": "சிறிய இடைவேளை (நிமிடங்கள்)",
+    "longBreakMinutes": "நீண்ட இடைவேளை (நிமிடங்கள்)",
+    "sessionsBeforeLongBreak": "நீண்ட இடைவேளைக்கு முன் அமர்வுகள்",
+    "preferences": "⚙️ விருப்பங்கள்",
+    "autoStart": "அடுத்த அமர்வை தானாக தொடங்கவும்",
+    "autoStartSubtitle": "டைமர் முடிந்தவுடன் தானாக தொடங்கவும்",
+    "playAlarmOnce": "அலாரத்தை ஒருமுறை மட்டும் ஒலிக்கவும்",
+    "playAlarmOnceSubtitle": "இல்லையெனினில், நீங்கள் நிறுத்தும் வரை ஒலிக்கும்",
+    "darkMode": "டார்க் மோட்",
+    "alarmSound": "🔔 அலாரம் ஒலி",
+    "cancel": "ரத்துசெய்",
+    "saveSettings": "அமைப்புகளைச் சேமி",
+    "bell": "🔔 மணி",
+    "notification": "📱 அறிவிப்பு",
+    "churchBell": "🎵 தேவாலய மணி",
+    "realityBell": "🔊 ரியாலிட்டி மணி",
+    "silent": "🔇 அமைதி",
+    "newTask": "புதிய பணி",
+    "taskName": "பணியின் பெயர்",
+    "estimatedPomodoros": "மதிப்பிடப்பட்ட போமோடோரோக்கள் 🍅",
+    "addTask": "பணியைச் சேர்",
+    "logDistraction": "கவனச்சிதறலைப் பதிவுசெய்",
+    "whatDistractedYou": "உங்களைக் கவனச்சிதறச் செய்தது எது?",
+    "logIt": "பதிவுசெய்",
+    "focusSessionDone": "🎉 வேலை அமர்வு முடிந்தது! இடைவேளைக்கான நேரம்.",
+    "breakOver": "⚡ இடைவேளை முடிந்தது! வேலைக்கு தயாராகிறீர்களா?",
+    "focusSessionRunning": "வேலை அமர்வு நடக்கிறது...",
+    "breakTimeRunning": "இடைவேளை நேரம் நடக்கிறது...",
+    "focusSessionComplete": "வேலை அமர்வு முடிந்தது!",
+    "breakComplete": "இடைவேளை முடிந்தது!",
+    "readyForBreak": "சிறிய இடைவேளைக்கு தயாராகிறீர்களா?",
+    "readyToFocus": "கவனம் செலுத்த தயாராகிறீர்களா?",
+    "timer": "டைமர்",
+    "tasks": "பணிகள்",
+    "stats": "புள்ளிவிவரங்கள்",
+    "focusTime": "கவன நேரம்",
+    "longBreak": "நீண்ட இடைவேளை",
+    "shortBreak": "சிறிய இடைவேளை",
+    "language": "மொழி",
+    "sessionNumber": "அமர்வு #{count}",
+    "@sessionNumber": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "reset": "மீட்டமை",
+    "skip": "தவிர்",
+    "goToTasks": "பணியைத் தேர்ந்தெடுக்க பணிகளுக்குச் (Tasks) செல்லவும்",
+    "stopAlarm": "அலாரத்தை நிறுத்து",
+    "autoStartOn": "தானியங்கி தொடக்கம் ஆன்",
+    "active": "செயலில் உள்ளது",
+    "select": "தேர்ந்தெடு",
+    "noTasksYet": "இதுவரை எந்த பணிகளும் இல்லை",
+    "tapToAddFirstTask": "உங்கள் முதல் பணியைச் சேர்க்க + ஐத் தட்டவும்",
+    "today": "இன்று",
+    "sessionsCount": "அமர்வுகள்",
+    "allTime": "எல்லா நேரமும்",
+    "totalFocusTime": "மொத்த கவன நேரம்",
+    "totalFocusTimeLabel": "🕐 மொத்த கவன நேரம்",
+    "minutesApproxHours": "{minutes} நிமிடங்கள் ≈ {hours} மணி",
+    "@minutesApproxHours": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "hours": {
+                "type": "String"
+            }
+        }
+    },
+    "sessionHistory": "அமர்வு வரலாறு",
+    "noSessionsYet": "இதுவரை அமர்வுகள் இல்லை",
+    "completeSessionToSee": "இங்கே வரலாற்றைப் பார்க்க ஒரு அமர்வை முடிக்கவும்",
+    "clearAll": "அனைத்தையும் அழிக்கவும்",
+    "noDistractionsLogged": "எந்தக் கவனச்சிதறலும் பதிவு செய்யப்படவில்லை!",
+    "tapToLogOne": "கவனச்சிதறலைப் பதிவு செய்ய ⚠️ ஐத் தட்டவும்",
+    "distractionsTitle": "கவனசசதறலகள ({count})",
+    "@distractionsTitle": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "totalLabel": "மததம",
+    "focusLabel": "கவனம"
+}
