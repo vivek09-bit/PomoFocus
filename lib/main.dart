@@ -139,6 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   int longBreakDuration = 15 * 60;
   int sessionsBeforeLongBreak = 4;
   bool autoStart = false;
+  bool playAlarmOnce = false;
   String selectedSound = 'bell';
 
   // ── Timer State ──
@@ -146,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   int sessionCount = 0;
   bool isRunning = false;
   bool isWorkSession = true;
+  bool isAlarmRinging = false;
   Timer? _timer;
   DateTime? _endTime;
 
@@ -266,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
       longBreakDuration = (prefs.getInt('longBreak') ?? 15) * 60;
       sessionsBeforeLongBreak = prefs.getInt('sessionsBeforeLongBreak') ?? 4;
       autoStart = prefs.getBool('autoStart') ?? false;
+      playAlarmOnce = prefs.getBool('playAlarmOnce') ?? false;
       selectedSound = prefs.getString('selectedSound') ?? 'bell';
       timeLeft = workDuration;
     });
@@ -278,12 +281,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
     await prefs.setInt('longBreak', longBreakDuration ~/ 60);
     await prefs.setInt('sessionsBeforeLongBreak', sessionsBeforeLongBreak);
     await prefs.setBool('autoStart', autoStart);
+    await prefs.setBool('playAlarmOnce', playAlarmOnce);
     await prefs.setString('selectedSound', selectedSound);
   }
 
   // ─── Timer Logic ─────────────────────────────
 
+  void stopAlarm() {
+    _audioPlayer.stop();
+    setState(() => isAlarmRinging = false);
+  }
+
   void startTimer() {
+    if (isAlarmRinging) stopAlarm();
     if (isRunning) return;
     WakelockPlus.enable(); // Keep screen awake
     _endTime = DateTime.now().add(Duration(seconds: timeLeft));
@@ -299,12 +309,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
   }
 
   void pauseTimer() {
+    if (isAlarmRinging) stopAlarm();
     _timer?.cancel();
     WakelockPlus.disable();
     setState(() => isRunning = false);
   }
 
   void resetTimer() {
+    if (isAlarmRinging) stopAlarm();
     _timer?.cancel();
     WakelockPlus.disable();
     setState(() {
@@ -391,6 +403,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
         'chime': 'sounds/single-church-bell.wav',
         'reality': 'sounds/soundreality-bell.wav',
       };
+      
+      await _audioPlayer.setReleaseMode(playAlarmOnce ? ReleaseMode.release : ReleaseMode.loop);
+      
+      if (!playAlarmOnce) {
+        setState(() => isAlarmRinging = true);
+      }
+      
       await _audioPlayer.play(AssetSource(sounds[selectedSound] ?? sounds['bell']!));
     } catch (_) {
       // Sound fails gracefully — visual notification always shows
@@ -411,6 +430,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
 
     String tempSound = selectedSound;
     bool tempAutoStart = autoStart;
+    bool tempPlayAlarmOnce = playAlarmOnce;
     bool tempDark = widget.isDarkMode;
 
     showDialog(
@@ -446,6 +466,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                   value: tempAutoStart,
                   activeColor: _sessionColor,
                   onChanged: (v) => setLocal(() => tempAutoStart = v),
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Play alarm only once'),
+                  subtitle: const Text('If off, alarm loops until you stop it'),
+                  value: tempPlayAlarmOnce,
+                  activeColor: _sessionColor,
+                  onChanged: (v) => setLocal(() => tempPlayAlarmOnce = v),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
@@ -498,6 +526,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
                   sessionsBeforeLongBreak =
                       int.tryParse(sessCtrl.text) ?? 4;
                   autoStart = tempAutoStart;
+                  playAlarmOnce = tempPlayAlarmOnce;
                   selectedSound = tempSound;
                   timeLeft = workDuration;
                   isRunning = false;
@@ -870,18 +899,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin, 
             const SizedBox(height: 48),
 
             // ── Control Buttons ──
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _iconControlButton(
-                    Icons.refresh, 'Reset', resetTimer, theme),
-                const SizedBox(width: 20),
-                _primaryPlayButton(),
-                const SizedBox(width: 20),
-                _iconControlButton(
-                    Icons.skip_next, 'Skip', _onSessionComplete, theme),
-              ],
-            ),
+            if (isAlarmRinging)
+              GestureDetector(
+                onTap: stopAlarm,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(color: Colors.redAccent.withOpacity(0.4), blurRadius: 15, offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.notifications_off, color: Colors.white, size: 28),
+                      const SizedBox(width: 12),
+                      Text('Stop Alarm', style: GoogleFonts.outfit(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _iconControlButton(
+                      Icons.refresh, 'Reset', resetTimer, theme),
+                  const SizedBox(width: 20),
+                  _primaryPlayButton(),
+                  const SizedBox(width: 20),
+                  _iconControlButton(
+                      Icons.skip_next, 'Skip', () {
+                        if (isAlarmRinging) stopAlarm();
+                        _onSessionComplete();
+                      }, theme),
+                ],
+              ),
 
             const SizedBox(height: 32),
 
